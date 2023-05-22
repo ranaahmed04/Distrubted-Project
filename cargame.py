@@ -1,4 +1,5 @@
 import random
+from network import Network
 from time import sleep
 
 import pygame
@@ -52,6 +53,8 @@ class CarRacing:
         self.run_car()
 
     def run_car(self):
+        n = Network()
+        startPos = n.getPos()
 
         while not self.crashed:
 

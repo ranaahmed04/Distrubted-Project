@@ -20,6 +20,7 @@ srv_socket.listen(2)
 print("waiting for connection, server starting...")
 
 def threaded_client(conn):
+    # send id when we are connected 
     conn.send(str.encode("Connected"))
     reply = ""
 
