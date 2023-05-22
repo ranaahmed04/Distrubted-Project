@@ -63,7 +63,7 @@ class CarRacing:
 
 
 
-def run_car(self):
+    def run_car(self):
         n = Network()
         startPos =read_pos(n.getPos())
         
@@ -115,7 +115,7 @@ def run_car(self):
  
 
 
-def display_message(self, msg):
+    def display_message(self, msg):
         font = pygame.font.SysFont("comicsansms", 72, True)
         text = font.render(msg, True, (255, 255, 255))
         self.gameDisplay.blit(text, (400 - text.get_width() // 2, 240 - text.get_height() // 2))
@@ -126,7 +126,7 @@ def display_message(self, msg):
         car_racing.initialize()
         car_racing.racing_window()
 
-def back_ground_raod(self):
+    def back_ground_raod(self):
         self.gameDisplay.blit(self.bgImg, (self.bg_x1, self.bg_y1))
         self.gameDisplay.blit(self.bgImg, (self.bg_x2, self.bg_y2))
 
@@ -139,15 +139,15 @@ def back_ground_raod(self):
         if self.bg_y2 >= self.display_height:
             self.bg_y2 = -600
 
-def run_enemy_car(self, thingx, thingy):
+    def run_enemy_car(self, thingx, thingy):
         self.gameDisplay.blit(self.enemy_car, (thingx, thingy))
 
-def highscore(self, count):
+    def highscore(self, count):
         font = pygame.font.SysFont("arial", 20)
         text = font.render("Score : " + str(count), True, self.white)
         self.gameDisplay.blit(text, (0, 0))
 
-def display_credit(self):
+    def display_credit(self):
         font = pygame.font.SysFont("lucidaconsole", 14)
         text = font.render("Thanks for playing!", True, self.white)
         self.gameDisplay.blit(text, (600, 520))
