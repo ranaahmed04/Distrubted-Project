@@ -1,20 +1,21 @@
 import socket 
-from _thread import*
+from _thread import *
 import sys
 
 
 
-server= " 192.168.1.4" # ipv4 address of my network 
+server= "192.168.1.4" # ipv4 address of my network 
 port = 5555 
 
 srv_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-try : 
- srv_socket.bind((server, port))
+try: 
+    srv_socket.bind((server, port))
 
 except socket.error as e : 
     str(e)
 # listen waiting for 2 players 
+
 srv_socket.listen(2) 
 print("waiting for connection, server starting...")
 
