@@ -41,7 +41,7 @@ class CarRacing:
         self.bg_y1 = 0
         self.bg_y2 = -600
         self.bg_speed = 3
-        self.count = 0
+        self.count = 0 
 
     def car(self, car_x_coordinate, car_y_coordinate):
         self.gameDisplay.blit(self.carImg, (car_x_coordinate, car_y_coordinate))
