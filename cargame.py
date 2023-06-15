@@ -9,8 +9,8 @@ import redis
 #import my_database
 
 
-host = '13.51.171.142'
-port = 8002
+host = '172.31.21.94'
+port = 80
 
 client = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 client.connect((host,port))

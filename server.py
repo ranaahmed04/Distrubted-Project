@@ -4,7 +4,7 @@ import time
 #import redis
 
 host = '0.0.0.0'
-port = 8002
+port = 80
 #my_database = redis.Redis(host=host,port=port,db=0)
 
 
