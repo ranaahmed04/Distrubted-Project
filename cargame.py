@@ -9,7 +9,7 @@ import redis
 #import my_database
 
 
-host = '127.0.0.1'
+host = '172.31.21.94'
 port = 3000
 
 client = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
