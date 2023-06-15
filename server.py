@@ -73,8 +73,7 @@ def recieve():
     while True:
         print('Server is running and listening . . . . <<------------------->> ')
         client , address = server.accept()
-        print("Server is newly conneted with someone - - -")
-        
+
         PlayerName.append(f"player{index + 1}")
 
         time.sleep(0.01)
