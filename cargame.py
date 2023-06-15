@@ -7,6 +7,8 @@ import time
 import pygame
 import redis
 #import my_database
+
+
 host = '13.51.171.142'
 port = 3005
 client = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
@@ -47,6 +49,7 @@ def clientRecieve():
                         for i in range(myPlayerNumber-1):
                             p = Player(name=f"player{i+1}",car_img=pygame.image.load(f'./img/car{i+1}.png'),x_pos=800*0.45,y_pos=600*0.8)
                             players[i]=p
+
                     print("You are --> "+ PlayerTitle)
             elif message == "Check":
                 client.send('Ack'.encode('utf-8'))
@@ -87,22 +90,17 @@ def clientRecieve():
                         #get player name and change the x coordinates of this player
                         n = message[6:7]
                         GlobalMessage = message
-                        if message[10:11] == "H":
-                            players[int(n)-1].X_Position = float(message[-5:])
-                        elif message[10:11] == "V":
-                            players[int(n)-1].Y_Position = float(message[-5:])
+                        players[int(n)-1].X_Position = float(message[-5:])
             elif message[8:15] == "Refresh":
                     if PlayerTitle != message[0:7]:  
                         with lock:
                             #get player name and change the x coordinates of this player
                             n = message[6:7]
                             GlobalMessage = message
-                            if message[15:16] == "H":
-                                players[int(n)-1].X_Position = float(message[-5:])
-                            if message[15:16] == "V":
-                                players[int(n)-1].Y_Position = float(message[-5:])                                
+                            players[int(n)-1].X_Position = float(message[-5:])
             else:
-                print(message)   
+                print(message)
+                
         except Exception as e:
             print('Error From Client Recieve ! : ' + e)
             client.close()
@@ -211,10 +209,8 @@ class CarRacing(threading.Thread):
             if SendInitPosition != "No":
                 with lock:
                     for i in range (len(eval(Guests))-1):
-                        client.send(f'{players[i].name} RefreshH {players[i].X_Position}'.encode('utf-8'))
-                        time.sleep(0.01)
-                        client.send(f'{players[i].name} RefreshV {players[i].Y_Position}'.encode('utf-8'))
-                        time.sleep(0.01)                       
+                        client.send(f'{players[i].name} Refresh {players[i].X_Position}'.encode('utf-8'))
+                        time.sleep(0.2)
                     SendInitPosition = "No"
 
             for event in pygame.event.get():
@@ -224,23 +220,13 @@ class CarRacing(threading.Thread):
                     if (event.key == pygame.K_LEFT):
                         with lock:
                             players[myPlayerNumber-1].X_Position -= 50
-                            client.send(f'{PlayerTitle} GoH Left {players[myPlayerNumber-1].X_Position}'.encode('utf-8'))
+                            client.send(f'{PlayerTitle} Go Left {players[myPlayerNumber-1].X_Position}'.encode('utf-8'))
                         print ("CAR X COORDINATES: %s" % players[myPlayerNumber-1].X_Position)
                     if (event.key == pygame.K_RIGHT):
                         with lock:
                             players[myPlayerNumber-1].X_Position += 50
-                            client.send(f'{PlayerTitle} GoH Right{players[myPlayerNumber-1].X_Position}'.encode('utf-8'))
+                            client.send(f'{PlayerTitle} Go Right{players[myPlayerNumber-1].X_Position}'.encode('utf-8'))
                         print ("CAR X COORDINATES: %s" % players[myPlayerNumber-1].X_Position)
-                    if (event.key == pygame.K_UP):
-                        with lock:
-                            players[myPlayerNumber-1].Y_Position -= 50
-                            client.send(f'{PlayerTitle} GoV Left {players[myPlayerNumber-1].Y_Position}'.encode('utf-8'))
-                        print ("CAR X COORDINATES: %s" % players[myPlayerNumber-1].Y_Position)
-                    if (event.key == pygame.K_DOWN):
-                        with lock:
-                            players[myPlayerNumber-1].Y_Position += 50
-                            client.send(f'{PlayerTitle} GoV Right{players[myPlayerNumber-1].Y_Position}'.encode('utf-8'))
-                        print ("CAR X COORDINATES: %s" % players[myPlayerNumber-1].Y_Position)
                     print ("x: {x}, y: {y}".format(x=players[myPlayerNumber-1].X_Position, y=players[myPlayerNumber-1].Y_Position))
 
             gameDisplay.fill(self.black)
