@@ -3,8 +3,8 @@ import socket
 import time
 #import redis
 
-host = '127.0.0.1'
-port = 80
+host = '13.51.171.142'
+port = 3002
 #my_database = redis.Redis(host=host,port=port,db=0)
 
 
