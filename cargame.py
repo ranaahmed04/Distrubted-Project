@@ -10,7 +10,7 @@ import redis
 
 
 host = '13.51.171.142'
-port = 42008
+port = 3000
 
 client = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 client.connect((host,port))
