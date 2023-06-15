@@ -14,6 +14,7 @@ port = 3000
 
 client = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 client.connect((host,port))
+print("connected to the server")
 lock = threading.Lock()
 GlobalMessage = ''
 IsChange = "No Change"
