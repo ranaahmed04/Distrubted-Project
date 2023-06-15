@@ -10,7 +10,7 @@ import redis
 
 
 host = '13.51.171.142'
-port = 12345
+port = 8002
 
 client = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 client.connect((host,port))
