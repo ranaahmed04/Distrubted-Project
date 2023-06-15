@@ -4,7 +4,7 @@ import time
 #import redis
 
 host = '172.31.21.94'
-port = 3003
+port = 3004
 #my_database = redis.Redis(host=host,port=port,db=0)
 
 
@@ -81,7 +81,7 @@ def recieve():
         #check()
         print(f'connection is established with {str(address)}')
         clients.append(client)
-        time.sleep(1)
+        time.sleep(0.6)
         
         client.send(f'{PlayerName[index]}'.encode('utf-8'))
         
@@ -89,7 +89,7 @@ def recieve():
         guests.append(PlayerName[index])
         print(guests)
         broadcast(f'New {PlayerName[index]} {guests}'.encode('utf-8'))
-        time.sleep(0.3)
+        time.sleep(0.8)
         client.send('you are now connected!'.encode('utf-8'))
         #my_database.set(f"player{index+1}",f"['{x}','{img}']")
         
