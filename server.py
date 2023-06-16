@@ -85,7 +85,7 @@ def recieve():
         print(guests)
         
         broadcast(f'New {PlayerName[index]} {guests}'.encode('utf-8'))
-        time.sleep(0.7)
+        time.sleep(1.4)
         
         client.send('you are now connected!'.encode('utf-8'))
         time.sleep(0.7)
