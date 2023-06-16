@@ -10,7 +10,7 @@ import redis
 
 
 host = '13.48.177.55'
-port = 3009
+port = 3010
 try:
     client = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
     client.connect((host,port))
@@ -29,6 +29,8 @@ clock = None
 SendInitPosition = "No"
 PlayerTitle = "None"
 Start = "None"
+chatOn = None
+currentTime = 0
 #***************************** Recieve Thread *************************************
 def clientRecieve():
     global PlayerTitle
@@ -40,6 +42,8 @@ def clientRecieve():
     global clock
     global SendInitPosition
     global Start
+    global chatOn 
+    global currentTime
     while True:
         try:
             message = client.recv(1024).decode('utf-8')
@@ -50,16 +54,15 @@ def clientRecieve():
             #..etc
             if go == "Go":
                 if PlayerTitle != message[0:7]:
-                    with lock:
-                        #get player name and change the x coordinates of this player
-                        n = message[6:7]
-                        GlobalMessage = message
-                        if message[10:11] == "H":
-                            #move is horizontal
-                            players[int(n)-1].X_Position = float(message[-5:])
-                        if message[10:11] == "V":
-                            #move is vertical
-                            players[int(n)-1].Y_Position = float(message[-5:])
+                    #get player name and change the x coordinates of this player
+                    n = message[6:7]
+                    GlobalMessage = message
+                    if message[10:11] == "H":
+                        #move is horizontal
+                        players[int(n)-1].X_Position = float(message[-5:])
+                    if message[10:11] == "V":
+                        #move is vertical
+                        players[int(n)-1].Y_Position = float(message[-5:])
             elif message[8:15] == "Refresh":
                     if PlayerTitle != message[0:7]:  
                         with lock:
@@ -112,7 +115,11 @@ def clientRecieve():
                 Start = message
             #player1 Go Left
             #player1 Go Right
-
+            elif message[0:4] == "chat":
+                if message[5:12] != PlayerTitle:
+                    print(f"{message[5:12]} : {message[13:]}")
+                    currentTime = time.time()
+                    chatOn = message[13:]
             else:
                 print(message)
                 
@@ -195,11 +202,19 @@ class CarRacing(threading.Thread):
         self.count = 0
 
     def car(self,x,y):
+        global chatOn
+        global currentTime
         for i in range(len(eval(Guests))):
          #   dataset = my_database.Getdatabase(f"player{i+1}")
           #  print(dataset)
            # self.gameDisplay.blit(dataset[0], (dataset[1], 600*0.8))
             gameDisplay.blit(players[i].car_img, (players[i].X_Position,y))
+        if chatOn != "None":
+            if time.time() - currentTime < 3:
+                text = self.FONT.render(f"{chatOn}", True, (255,255,255))
+                gameDisplay.blit(text,(10,420))
+            elif time.time() - currentTime > 3:
+                chatOn = "None"
 
     def racing_window(self):
         global gameDisplay
@@ -262,7 +277,7 @@ class CarRacing(threading.Thread):
                         print ("x: {x}, y: {y}".format(x=players[myPlayerNumber-1].X_Position, y=players[myPlayerNumber-1].Y_Position))
                     if self.active:
                         if event.key == pygame.K_RETURN:
-                            print(self.text)
+                            client.send(f'chat-{PlayerTitle}-{self.text}'.encode('utf-8'))
                             self.text = ''
                         elif event.key == pygame.K_BACKSPACE:
                             self.text = self.text[:-1]

@@ -4,7 +4,7 @@ import time
 #import redis
 
 host = '172.31.21.94'
-port = 3009
+port = 3010
 #my_database = redis.Redis(host=host,port=port,db=0)
 
 
@@ -84,7 +84,7 @@ def recieve():
         
         client.send(f'{PlayerName[index]}'.encode('utf-8'))
         
-        time.sleep(0.4)
+        time.sleep(0.9)
 
         guests.append(PlayerName[index])
         print(guests)
