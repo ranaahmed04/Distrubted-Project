@@ -242,6 +242,11 @@ class CarRacing(threading.Thread):
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     players[myPlayerNumber-1].crashed = True
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if self.TEXTBOX.collidepoint(event.pos):
+                        self.active = True
+                    else:
+                        self.active = False  
                 if (event.type == pygame.KEYDOWN):
                     if (event.key == pygame.K_LEFT):
                         with lock:
@@ -254,7 +259,7 @@ class CarRacing(threading.Thread):
                             client.send(f'{PlayerTitle} GoH Right{players[myPlayerNumber-1].X_Position}'.encode('utf-8'))
                         print ("CAR X COORDINATES: %s" % players[myPlayerNumber-1].X_Position)
                     print ("x: {x}, y: {y}".format(x=players[myPlayerNumber-1].X_Position, y=players[myPlayerNumber-1].Y_Position))
-                    if active:
+                    if self.active:
                         if event.key == pygame.K_RETURN:
                             print(self.text)
                             self.text = ''
@@ -262,13 +267,13 @@ class CarRacing(threading.Thread):
                             self.text = self.text[:-1]
                         else:
                             self.text += event.unicode 
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    if self.TEXTBOX.collidepoint(event.pos):
-                        active = True
-                    else:
-                        active = False  
 
 
+    
+            pygame.draw.rect(gameDisplay, self.COLOR_ACTIVE if self.active else self.COLOR_INACTIVE, self.TEXTBOX)
+    
+            text_surface = self.FONT.render(self.text, True, (0, 0, 0))
+            self.gameDisplay.blit(text_surface, (self.TEXTBOX.x+5, self.TEXTBOX.y+5))
     
 
 
@@ -283,13 +288,6 @@ class CarRacing(threading.Thread):
                 self.enemy_car_startx = random.randrange(310, 450)
             '''
             self.car(players[myPlayerNumber-1].X_Position,players[myPlayerNumber-1].Y_Position)
-            if self.COLOR_ACTIVE == active:
-                pygame.draw.rect(self.SCREEN, self.COLOR_ACTIVE, self.TEXTBOX)
-            else:
-                pygame.draw.rect(self.SCREEN, self.COLOR_INACTIVE, self.TEXTBOX)
-
-            text_surface = self.FONT.render(self.text, True, (0, 0, 0))
-            self.SCREEN.blit(text_surface, (self.TEXTBOX.x+5, self.TEXTBOX.y+5))
             self.highscore(self.count)
             self.count += 1
             '''''
