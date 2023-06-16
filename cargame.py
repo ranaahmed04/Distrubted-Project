@@ -270,12 +270,6 @@ class CarRacing(threading.Thread):
 
 
     
-            pygame.draw.rect(gameDisplay, self.COLOR_ACTIVE if self.active else self.COLOR_INACTIVE, self.TEXTBOX)
-    
-            text_surface = self.FONT.render(self.text, True, (0, 0, 0))
-            self.gameDisplay.blit(text_surface, (self.TEXTBOX.x+5, self.TEXTBOX.y+5))
-    
-
 
             gameDisplay.fill(self.black)
             self.back_ground_raod()
@@ -288,6 +282,10 @@ class CarRacing(threading.Thread):
                 self.enemy_car_startx = random.randrange(310, 450)
             '''
             self.car(players[myPlayerNumber-1].X_Position,players[myPlayerNumber-1].Y_Position)
+            pygame.draw.rect(gameDisplay, self.COLOR_ACTIVE if self.active else self.COLOR_INACTIVE, self.TEXTBOX)
+    
+            text_surface = self.FONT.render(self.text, True, (0, 0, 0))
+            gameDisplay.blit(text_surface, (self.TEXTBOX.x+5, self.TEXTBOX.y+5))
             self.highscore(self.count)
             self.count += 1
             '''''
