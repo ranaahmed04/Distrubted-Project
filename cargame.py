@@ -8,7 +8,7 @@ import pygame
 #import redis
 #------------------------- Open connection with server ---------------------
 #import my_database
-host = '16.171.64.213'
+host = '16.170.230.219' #public ip VM
 port = 3013
 
 print("connected to the server")
@@ -54,19 +54,21 @@ def clientRecieve():
             #player2
             #..etc
             if go == "Go":
-                if PlayerTitle != message[0:7]:
-                    #get player name and change the x coordinates of this player
-                    n = message[6:7]
-                    if message[10:11] == "H":
-                        GlobalMessage = message
-                        #move is horizontal
-                        players[int(n)-1].X_Position = float(message[-5:])
-                        
-                    if message[10:11] == "V":
-                        GlobalMessage = message
-                        #move is vertical
-                        players[int(n)-1].Y_Position = float(message[-5:])
-                        
+                try:
+                    if PlayerTitle != message[0:7]:
+                        #get player name and change the x coordinates of this player
+                        n = message[6:7]
+                        if message[10:11] == "H":
+                            GlobalMessage = message
+                            #move is horizontal
+                            players[int(n)-1].X_Position = float(message[-5:])
+                            
+                        if message[10:11] == "V":
+                            GlobalMessage = message
+                            #move is vertical
+                            players[int(n)-1].Y_Position = float(message[-5:])
+                except:
+                    pass
             elif message[8:15] == "Refresh":
                     if PlayerTitle != message[0:7]:  
                         with lock:
@@ -107,14 +109,13 @@ def clientRecieve():
                 for i in range(len(eval(Guests))):
                     if (players[i].name == message[-7:]) and (players[i].name != PlayerTitle):
                         print(f"{message[-7:]} is defeated")
-                        with lock:
-                            font = pygame.font.SysFont("lucidaconsole", 14)
-                            text = font.render(f"{message[-7:]} is defeated", True, (255,255,255))
-                            gameDisplay.blit(text, (600, 420)) 
-                            pygame.display.update()
-                            clock.tick(60)
-                            sleep(1)
-                            players[i].X_Position = 800*0.45
+                        font = pygame.font.SysFont("lucidaconsole", 14)
+                        text = font.render(f"{message[-7:]} is defeated", True, (255,255,255))
+                        gameDisplay.blit(text, (600, 420)) 
+                        pygame.display.update()
+                        clock.tick(60)
+                        sleep(1)
+                        players[i].X_Position = 800*0.45
             elif message == "StartPlay":
                 Start = message
             #player1 Go Left
@@ -129,7 +130,6 @@ def clientRecieve():
                 
         except Exception as e:
             print('Error From Client Recieve ! : ' + e)
-            client.close()
             break
 try:
     client = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
