@@ -89,10 +89,10 @@ def recieve():
         guests.append(PlayerName[index])
         print(guests)
         broadcast(f'New {PlayerName[index]} {guests}'.encode('utf-8'))
-        time.sleep(0.7)
+        time.sleep(0.8)
         client.send('you are now connected!'.encode('utf-8'))
         #my_database.set(f"player{index+1}",f"['{x}','{img}']")
-        time.sleep(0.4)
+        time.sleep(0.9)
         client.send('StartPlay'.encode('utf-8'))
         index = index +1
         time.sleep(0.4)
