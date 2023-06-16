@@ -6,9 +6,8 @@ import threading
 import time
 import pygame
 import redis
+#------------------------- Open connection with server ---------------------
 #import my_database
-
-
 host = '13.48.177.55'
 port = 3010
 try:
@@ -18,7 +17,10 @@ except:
     print("\n\n*** No server Found - Please open the server *** \n\n")
     sys.exit()
 print("connected to the server")
-lock = threading.Lock()
+#----------------------- END - Open connection with server ---------------------
+
+
+# ---------------------------------- Global Variables --------------------------------
 GlobalMessage = ''
 IsChange = "No Change"
 myPosition = 800 * 0.45
@@ -31,6 +33,9 @@ PlayerTitle = "None"
 Start = "None"
 chatOn = None
 currentTime = 0
+lock = threading.Lock()
+# -------------------------------- END - Global Variables --------------------------------
+
 #***************************** Recieve Thread *************************************
 def clientRecieve():
     global PlayerTitle
@@ -211,7 +216,7 @@ class CarRacing(threading.Thread):
             gameDisplay.blit(players[i].car_img, (players[i].X_Position,y))
         if chatOn != "None":
             if time.time() - currentTime < 3:
-                text = self.FONT.render(f"{chatOn[5:12]}:\n{chatOn[13:]}", True, (255,255,255))
+                text = self.FONT.render(f"{chatOn[5:12]}: {chatOn[13:]}", True, (255,255,255))
                 gameDisplay.blit(text,(10,420))
             elif time.time() - currentTime > 3:
                 chatOn = "None"
