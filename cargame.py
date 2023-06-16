@@ -5,7 +5,7 @@ import sys
 import threading
 import time
 import pygame
-import redis
+#import redis
 #------------------------- Open connection with server ---------------------
 #import my_database
 host = '13.48.177.55'
@@ -230,7 +230,6 @@ class CarRacing(threading.Thread):
         client.send(f"StartAgain-['{PlayerTitle}','{myPosition}','{players[myPlayerNumber-1].car_img}']".encode('utf-8'))
         pygame.display.set_caption('Car Dodge')
         self.run_car()
-
     def run_car(self):
         global IsChange
         global gameDisplay
