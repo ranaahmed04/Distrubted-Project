@@ -3,7 +3,7 @@ import socket
 import time
 #import redis
 
-host = '172.31.21.94'
+host = '13.48.177.55'
 port = 3006
 #my_database = redis.Redis(host=host,port=port,db=0)
 
