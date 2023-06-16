@@ -4,7 +4,7 @@ import time
 #import redis
 
 host = '13.48.177.55'
-port = 3006
+port = 3007
 #my_database = redis.Redis(host=host,port=port,db=0)
 
 
@@ -85,13 +85,15 @@ def recieve():
         client.send(f'{PlayerName[index]}'.encode('utf-8'))
         
         time.sleep(0.001)
+
         guests.append(PlayerName[index])
         print(guests)
         broadcast(f'New {PlayerName[index]} {guests}'.encode('utf-8'))
         time.sleep(0.8)
         client.send('you are now connected!'.encode('utf-8'))
         #my_database.set(f"player{index+1}",f"['{x}','{img}']")
-        
+        time.sleep(0.001)
+        client.send('StartPlay'.encode('utf-8'))
         index = index +1
 
         thread = threading.Thread(target=handleClient,args=(client,))

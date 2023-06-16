@@ -1,7 +1,7 @@
 import random
 from time import sleep
 import socket
-
+import sys
 import threading
 import time
 import pygame
@@ -10,9 +10,13 @@ import redis
 
 
 host = '13.48.177.55'
-port = 3006
-client = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-client.connect((host,port))
+port = 3007
+try:
+    client = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+    client.connect((host,port))
+except:
+    print("\n\n*** No server Found - Please open the server *** \n\n")
+    sys.exit()
 print("connected to the server")
 lock = threading.Lock()
 GlobalMessage = ''
@@ -23,6 +27,8 @@ myPlayerNumber = 0
 gameDisplay = None
 clock = None
 SendInitPosition = "No"
+PlayerTitle = "None"
+Start = "None"
 #***************************** Recieve Thread *************************************
 def clientRecieve():
     global PlayerTitle
@@ -33,6 +39,7 @@ def clientRecieve():
     global players
     global clock
     global SendInitPosition
+    global Start
     while True:
         try:
             message = client.recv(1024).decode('utf-8')
@@ -41,7 +48,26 @@ def clientRecieve():
             #player1
             #player2
             #..etc
-            if playerNum == "player":
+            if go == "Go":
+                if PlayerTitle != message[0:7]:
+                    with lock:
+                        #get player name and change the x coordinates of this player
+                        n = message[6:7]
+                        GlobalMessage = message
+                        if message[10:11] == "H":
+                            #move is horizontal
+                            players[int(n)-1].X_Position = float(message[-5:])
+                        if message[10:11] == "V":
+                            #move is vertical
+                            players[int(n)-1].Y_Position = float(message[-5:])
+            elif message[8:15] == "Refresh":
+                    if PlayerTitle != message[0:7]:  
+                        with lock:
+                            #get player name and change the x coordinates of this player
+                            n = message[6:7]
+                            GlobalMessage = message
+                            players[int(n)-1].X_Position = float(message[-5:])
+            elif playerNum == "player":
                 with lock:
                     PlayerTitle = message
                     myPlayerNumber = int(PlayerTitle[-1])
@@ -82,22 +108,11 @@ def clientRecieve():
                             clock.tick(60)
                             sleep(1)
                             players[i].X_Position = 800*0.45
+            elif message == "StartPlay":
+                Start = message
             #player1 Go Left
             #player1 Go Right
-            elif go == "Go":
-                if PlayerTitle != message[0:7]:
-                    with lock:
-                        #get player name and change the x coordinates of this player
-                        n = message[6:7]
-                        GlobalMessage = message
-                        players[int(n)-1].X_Position = float(message[-5:])
-            elif message[8:15] == "Refresh":
-                    if PlayerTitle != message[0:7]:  
-                        with lock:
-                            #get player name and change the x coordinates of this player
-                            n = message[6:7]
-                            GlobalMessage = message
-                            players[int(n)-1].X_Position = float(message[-5:])
+
             else:
                 print(message)
                 
@@ -220,12 +235,12 @@ class CarRacing(threading.Thread):
                     if (event.key == pygame.K_LEFT):
                         with lock:
                             players[myPlayerNumber-1].X_Position -= 50
-                            client.send(f'{PlayerTitle} Go Left {players[myPlayerNumber-1].X_Position}'.encode('utf-8'))
+                            client.send(f'{PlayerTitle} GoH Left {players[myPlayerNumber-1].X_Position}'.encode('utf-8'))
                         print ("CAR X COORDINATES: %s" % players[myPlayerNumber-1].X_Position)
                     if (event.key == pygame.K_RIGHT):
                         with lock:
                             players[myPlayerNumber-1].X_Position += 50
-                            client.send(f'{PlayerTitle} Go Right{players[myPlayerNumber-1].X_Position}'.encode('utf-8'))
+                            client.send(f'{PlayerTitle} GoH Right{players[myPlayerNumber-1].X_Position}'.encode('utf-8'))
                         print ("CAR X COORDINATES: %s" % players[myPlayerNumber-1].X_Position)
                     print ("x: {x}, y: {y}".format(x=players[myPlayerNumber-1].X_Position, y=players[myPlayerNumber-1].Y_Position))
 
@@ -304,7 +319,9 @@ if __name__ == '__main__':
 
     thread = threading.Thread(target=clientRecieve)
     thread.start()
-    time.sleep(1)
+    while(Start != "StartPlay"):
+        pass
+    Start = "None"
     car_racing = CarRacing()
     car_racing.start()
 
