@@ -9,7 +9,7 @@ import pygame
 #------------------------- Open connection with server ---------------------
 #import my_database
 host = '13.48.177.55'
-port = 3010
+port = 3011
 try:
     client = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
     client.connect((host,port))
@@ -61,13 +61,16 @@ def clientRecieve():
                 if PlayerTitle != message[0:7]:
                     #get player name and change the x coordinates of this player
                     n = message[6:7]
-                    GlobalMessage = message
                     if message[10:11] == "H":
+                        GlobalMessage = message
                         #move is horizontal
                         players[int(n)-1].X_Position = float(message[-5:])
+                        
                     if message[10:11] == "V":
+                        GlobalMessage = message
                         #move is vertical
                         players[int(n)-1].Y_Position = float(message[-5:])
+                        
             elif message[8:15] == "Refresh":
                     if PlayerTitle != message[0:7]:  
                         with lock:
@@ -193,8 +196,7 @@ class CarRacing(threading.Thread):
         #self.enemy_car_speed = 5
         #self.enemy_car_width = 49
         #self.enemy_car_height = 100
-        #my_database.StoreDatabase(PlayerTitle,self.carImg,self.car_x_coordinate,self.crashed)
-        
+        #my_database.StoreDatabase(PlayerTitle,self.carImg,self.car_x_coordinate,self.crashed)   
         p = Player(name=PlayerTitle,car_img=pygame.image.load(f'./img/car{myPlayerNumber}.png'),x_pos=800*0.45,y_pos=600*0.8)
         players[myPlayerNumber-1]=p
         # Background
@@ -205,7 +207,6 @@ class CarRacing(threading.Thread):
         self.bg_y2 = -600
         self.bg_speed = 3
         self.count = 0
-
     def car(self,x,y):
         global chatOn
         global currentTime
@@ -220,7 +221,6 @@ class CarRacing(threading.Thread):
                 gameDisplay.blit(text,(10,420))
             elif time.time() - currentTime > 3:
                 chatOn = "None"
-
     def racing_window(self):
         global gameDisplay
         global myPosition
