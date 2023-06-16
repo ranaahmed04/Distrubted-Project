@@ -10,7 +10,7 @@ import redis
 
 
 host = '13.48.177.55'
-port = 3007
+port = 3008
 try:
     client = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
     client.connect((host,port))
