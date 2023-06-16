@@ -76,26 +76,24 @@ def recieve():
 
         PlayerName.append(f"player{index + 1}")
 
-        time.sleep(0.4)
+
         #check()
         print(f'connection is established with {str(address)}')
         clients.append(client)
-        time.sleep(0.4)
-        
+
         client.send(f'{PlayerName[index]}'.encode('utf-8'))
-        
-        time.sleep(0.9)
+        x = client.recv()
 
         guests.append(PlayerName[index])
         print(guests)
         broadcast(f'New {PlayerName[index]} {guests}'.encode('utf-8'))
-        time.sleep(0.8)
+        x = client.recv()
         client.send('you are now connected!'.encode('utf-8'))
+        x = client.recv()
         #my_database.set(f"player{index+1}",f"['{x}','{img}']")
-        time.sleep(0.9)
         client.send('StartPlay'.encode('utf-8'))
+        x = client.recv()
         index = index +1
-        time.sleep(0.4)
         thread = threading.Thread(target=handleClient,args=(client,))
         thread.start()
 
