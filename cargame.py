@@ -9,7 +9,7 @@ import pygame
 #------------------------- Open connection with server ---------------------
 #import my_database
 host = '13.53.142.107'
-port = 3012
+port = 3013
 try:
     client = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
     client.connect((host,port))
