@@ -119,7 +119,7 @@ def clientRecieve():
                 if message[5:12] != PlayerTitle:
                     print(f"{message[5:12]} : {message[13:]}")
                     currentTime = time.time()
-                    chatOn = message[13:]
+                    chatOn = message
             else:
                 print(message)
                 
@@ -211,7 +211,7 @@ class CarRacing(threading.Thread):
             gameDisplay.blit(players[i].car_img, (players[i].X_Position,y))
         if chatOn != "None":
             if time.time() - currentTime < 3:
-                text = self.FONT.render(f"{chatOn}", True, (255,255,255))
+                text = self.FONT.render(f"{chatOn[5:12]}:\n{chatOn[13:]}", True, (255,255,255))
                 gameDisplay.blit(text,(10,420))
             elif time.time() - currentTime > 3:
                 chatOn = "None"
