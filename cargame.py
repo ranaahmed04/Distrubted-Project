@@ -82,7 +82,6 @@ def clientRecieve():
                         for i in range(myPlayerNumber-1):
                             p = Player(name=f"player{i+1}",car_img=pygame.image.load(f'./img/car{i+1}.png'),x_pos=800*0.45,y_pos=600*0.8)
                             players[i]=p
-                    client.send("Ack".encode('utf-8'))        
 
                     print("You are --> "+ PlayerTitle)
             elif message == "Check":
@@ -97,7 +96,7 @@ def clientRecieve():
                     p = Player(name=f"player{len(eval(Guests))}",car_img=pygame.image.load(f'./img/car{len(eval(Guests))}.png'),x_pos=800*0.45,y_pos=600*0.8)
                     players[len(eval(Guests))-1]=p
                     print(players)
-                    client.send("Ack".encode('utf-8')) 
+                    time.sleep(0.01)
                     #create object and append in array of objects
             elif message[0:6] == "Update":
                 with lock:
@@ -118,7 +117,6 @@ def clientRecieve():
                             players[i].X_Position = 800*0.45
             elif message == "StartPlay":
                 Start = message
-                client.send("Ack".encode('utf-8')) 
             #player1 Go Left
             #player1 Go Right
             elif message[0:4] == "chat":
@@ -126,9 +124,6 @@ def clientRecieve():
                     print(f"{message[5:12]} : {message[13:]}")
                     currentTime = time.time()
                     chatOn = message
-
-            elif message == 'you are now connected!':
-                client.send("Ack".encode('utf-8')) 
             else:
                 print(message)
                 
