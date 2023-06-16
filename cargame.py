@@ -17,6 +17,7 @@ except:
     print("\n\n*** No server Found - Please open the server *** \n\n")
     sys.exit()
 print("connected to the server")
+
 #----------------------- END - Open connection with server ---------------------
 
 
@@ -135,6 +136,8 @@ def clientRecieve():
             print('Error From Client Recieve ! : ' + e)
             client.close()
             break
+thread = threading.Thread(target=clientRecieve)
+thread.start()
 #***************************** End - Recieve Thread *************************************
 '''''
 def sendChat():
@@ -179,8 +182,8 @@ class CarRacing(threading.Thread):
 
         self.FONT = pygame.font.SysFont('arial', 16)
         self.TEXTBOX = pygame.Rect(10, self.HEIGHT-30, 140, 20)
-        self.COLOR_INACTIVE = pygame.Color('lightskyblue3')
-        self.COLOR_ACTIVE = pygame.Color('dodgerblue2')
+        self.COLOR_INACTIVE = pygame.Color('grey')
+        self.COLOR_ACTIVE = pygame.Color('white')
 
         self.text = ''
         self.active = False
@@ -367,9 +370,6 @@ class CarRacing(threading.Thread):
         gameDisplay.blit(text, (600, 520))
 
 if __name__ == '__main__':
-
-    thread = threading.Thread(target=clientRecieve)
-    thread.start()
     while(Start != "StartPlay"):
         pass
     Start = "None"
