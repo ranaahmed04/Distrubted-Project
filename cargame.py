@@ -8,8 +8,8 @@ import pygame
 #import redis
 #------------------------- Open connection with server ---------------------
 #import my_database
-host = '13.48.177.55'
-port = 3011
+host = '13.53.142.107'
+port = 3012
 try:
     client = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
     client.connect((host,port))
