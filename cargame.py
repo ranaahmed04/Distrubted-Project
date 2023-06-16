@@ -10,7 +10,7 @@ import redis
 
 
 host = '13.48.177.55'
-port = 3008
+port = 3009
 try:
     client = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
     client.connect((host,port))
@@ -158,6 +158,17 @@ class CarRacing(threading.Thread):
         self.white = (255, 255, 255)
         clock = pygame.time.Clock()
         self.gameDisplay = None
+#chat added
+        self.WIDTH, self.HEIGHT = 800, 600
+        self.SCREEN = pygame.display.set_mode((self.WIDTH, self.HEIGHT))
+
+        self.FONT = pygame.font.SysFont('arial', 16)
+        self.TEXTBOX = pygame.Rect(10, self.HEIGHT-30, 140, 20)
+        self.COLOR_INACTIVE = pygame.Color('lightskyblue3')
+        self.COLOR_ACTIVE = pygame.Color('dodgerblue2')
+
+        self.text = ''
+        self.active = False
 
         self.initialize()
 
@@ -243,6 +254,23 @@ class CarRacing(threading.Thread):
                             client.send(f'{PlayerTitle} GoH Right{players[myPlayerNumber-1].X_Position}'.encode('utf-8'))
                         print ("CAR X COORDINATES: %s" % players[myPlayerNumber-1].X_Position)
                     print ("x: {x}, y: {y}".format(x=players[myPlayerNumber-1].X_Position, y=players[myPlayerNumber-1].Y_Position))
+                    if active:
+                        if event.key == pygame.K_RETURN:
+                            print(self.text)
+                            self.text = ''
+                        elif event.key == pygame.K_BACKSPACE:
+                            self.text = self.text[:-1]
+                        else:
+                            self.text += event.unicode 
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if self.TEXTBOX.collidepoint(event.pos):
+                        active = True
+                    else:
+                        active = False  
+
+
+    
+
 
             gameDisplay.fill(self.black)
             self.back_ground_raod()
@@ -255,6 +283,13 @@ class CarRacing(threading.Thread):
                 self.enemy_car_startx = random.randrange(310, 450)
             '''
             self.car(players[myPlayerNumber-1].X_Position,players[myPlayerNumber-1].Y_Position)
+            if self.COLOR_ACTIVE == active:
+                pygame.draw.rect(self.SCREEN, self.COLOR_ACTIVE, self.TEXTBOX)
+            else:
+                pygame.draw.rect(self.SCREEN, self.COLOR_INACTIVE, self.TEXTBOX)
+
+            text_surface = self.FONT.render(self.text, True, (0, 0, 0))
+            self.SCREEN.blit(text_surface, (self.TEXTBOX.x+5, self.TEXTBOX.y+5))
             self.highscore(self.count)
             self.count += 1
             '''''
