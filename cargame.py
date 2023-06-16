@@ -213,19 +213,23 @@ class CarRacing(threading.Thread):
         self.bg_speed = 3
         self.count = 0
     def car(self,x,y):
-        global chatOn
-        global currentTime
-        for i in range(len(eval(Guests))):
-         #   dataset = my_database.Getdatabase(f"player{i+1}")
-          #  print(dataset)
-           # self.gameDisplay.blit(dataset[0], (dataset[1], 600*0.8))
-            gameDisplay.blit(players[i].car_img, (players[i].X_Position,y))
-        if chatOn != "None":
-            if time.time() - currentTime < 3:
-                text = self.FONT.render(f"{chatOn[5:12]}: {chatOn[13:]}", True, (255,255,255))
-                gameDisplay.blit(text,(10,420))
-            elif time.time() - currentTime > 3:
-                chatOn = "None"
+        try:
+            global chatOn
+            global currentTime
+            for i in range(len(eval(Guests))):
+            #   dataset = my_database.Getdatabase(f"player{i+1}")
+            #  print(dataset)
+            # self.gameDisplay.blit(dataset[0], (dataset[1], 600*0.8))
+                gameDisplay.blit(players[i].car_img, (players[i].X_Position,y))
+            if chatOn != "None":
+                if time.time() - currentTime < 3:
+                    text = self.FONT.render(f"{chatOn[5:12]}: {chatOn[13:]}", True, (255,255,255))
+                    gameDisplay.blit(text,(10,420))
+                elif time.time() - currentTime > 3:
+                    chatOn = "None"
+        except:
+            pass
+                
     def racing_window(self):
         global gameDisplay
         global myPosition

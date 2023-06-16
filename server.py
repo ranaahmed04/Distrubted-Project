@@ -87,8 +87,6 @@ def recieve():
         broadcast(f'New {PlayerName[index]} {guests}'.encode('utf-8'))
         time.sleep(1.4)
         
-        client.send('you are now connected!'.encode('utf-8'))
-        time.sleep(0.7)
         #my_database.set(f"player{index+1}",f"['{x}','{img}']")
         
         client.send('StartPlay'.encode('utf-8'))
