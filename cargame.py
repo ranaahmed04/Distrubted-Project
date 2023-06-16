@@ -253,12 +253,13 @@ class CarRacing(threading.Thread):
                             players[myPlayerNumber-1].X_Position -= 50
                             client.send(f'{PlayerTitle} GoH Left {players[myPlayerNumber-1].X_Position}'.encode('utf-8'))
                         print ("CAR X COORDINATES: %s" % players[myPlayerNumber-1].X_Position)
+                        print ("x: {x}, y: {y}".format(x=players[myPlayerNumber-1].X_Position, y=players[myPlayerNumber-1].Y_Position))
                     if (event.key == pygame.K_RIGHT):
                         with lock:
                             players[myPlayerNumber-1].X_Position += 50
                             client.send(f'{PlayerTitle} GoH Right{players[myPlayerNumber-1].X_Position}'.encode('utf-8'))
                         print ("CAR X COORDINATES: %s" % players[myPlayerNumber-1].X_Position)
-                    print ("x: {x}, y: {y}".format(x=players[myPlayerNumber-1].X_Position, y=players[myPlayerNumber-1].Y_Position))
+                        print ("x: {x}, y: {y}".format(x=players[myPlayerNumber-1].X_Position, y=players[myPlayerNumber-1].Y_Position))
                     if self.active:
                         if event.key == pygame.K_RETURN:
                             print(self.text)
