@@ -4,7 +4,7 @@ import time
 #import redis
 
 host = '172.31.21.94' #private ip VM
-port = 3014
+port = 3015
 #my_database = redis.Redis(host=host,port=port,db=0)
 
 
@@ -85,7 +85,7 @@ def recieve():
         print(guests)
         
         broadcast(f'New {PlayerName[index]} {guests}'.encode('utf-8'))
-        time.sleep(1.4)
+        time.sleep(2)
         
         #my_database.set(f"player{index+1}",f"['{x}','{img}']")
         

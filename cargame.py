@@ -8,8 +8,8 @@ import pygame
 #import redis
 #------------------------- Open connection with server ---------------------
 #import my_database
-host = '16.171.52.73' #public ip VM
-port = 3014
+host = '16.171.54.29' #public ip VM
+port = 3015
 
 #----------------------- END - Open connection with server ---------------------
 
@@ -28,6 +28,8 @@ Start = "None"
 chatOn = None
 GameOverOn = 0
 playerGameOver = "None"
+WinOn = 0
+playerWin = "None"
 currentTime = 0
 lock = threading.Lock()
 # -------------------------------- END - Global Variables --------------------------------
@@ -47,6 +49,8 @@ def clientRecieve():
     global currentTime
     global GameOverOn
     global playerGameOver
+    global WinOn
+    global playerWin
     while True:
         try:
             message = client.recv(1024).decode('utf-8')
@@ -63,12 +67,12 @@ def clientRecieve():
                         if message[10:11] == "H":
                             GlobalMessage = message
                             #move is horizontal
-                            players[int(n)-1].X_Position = float(message[-5:])
+                            players[int(n)-1].X_Position = float(message[12:])
                             
                         if message[10:11] == "V":
                             GlobalMessage = message
                             #move is vertical
-                            players[int(n)-1].Y_Position = float(message[-5:])
+                            players[int(n)-1].Y_Position = float(message[12:])
                 except:
                     pass
             elif message[8:15] == "Refresh":
@@ -77,7 +81,11 @@ def clientRecieve():
                             #get player name and change the x coordinates of this player
                             n = message[6:7]
                             GlobalMessage = message
-                            players[int(n)-1].X_Position = float(message[-5:])
+                            if message[15:16] == 'H':
+                                players[int(n)-1].X_Position = float(message[17:])
+                            elif message[15:16] == 'V':
+                                players[int(n)-1].Y_Position = float(message[17:])
+
             elif playerNum == "player":
                 with lock:
                     PlayerTitle = message
@@ -93,7 +101,7 @@ def clientRecieve():
             #New player1 has connected to the game
             elif message[0:3] == "New":
                 with lock:
-                    SendInitPosition = message[4:11]
+                    
                     #message[4:11] == player1
                     Guests = message[12:]
                     print("Guestes ++ : "+ Guests)
@@ -101,6 +109,7 @@ def clientRecieve():
                     players[len(eval(Guests))-1]=p
                     print(players)
                     time.sleep(0.01)
+                    SendInitPosition = message[4:11]
                     #create object and append in array of objects
             elif message[0:6] == "Update":
                 with lock:
@@ -115,7 +124,12 @@ def clientRecieve():
                         print(f"{message[-7:]} is defeated")
                         GameOverOn = time.time()
                         playerGameOver = message[-7:]
-
+            elif message[0:3] == "Win":
+                for i in range(len(eval(Guests))):
+                    if (players[i].name == message[-7:]) and (players[i].name != PlayerTitle):
+                        print(f"{message[-7:]} is Win !!!!!!")
+                        WinOn = time.time()
+                        playerWin = message[-7:]                
             elif message == "StartPlay":
                 Start = message
             #player1 Go Left
@@ -125,6 +139,7 @@ def clientRecieve():
                     print(f"{message[5:12]} : {message[13:]}")
                     currentTime = time.time()
                     chatOn = message
+            
             else:
                 print(message)
                 
@@ -160,6 +175,7 @@ class Player:
         self.X_Position = x_pos
         self.Y_Position = y_pos
         self.crashed = False
+        self.win = False
 
 #playerName = client.recv(1024).decode('utf-8')
 class CarRacing(threading.Thread):
@@ -219,23 +235,39 @@ class CarRacing(threading.Thread):
             global chatOn
             global currentTime
             global GameOverOn
+            global WinOn
+            global playerWin
             t = self.FONT.render(f"Enter Your message ^_^ :", True, (255,255,255))
             gameDisplay.blit(t,(10,540))
+            final = self.FONT.render(f"Final - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - Final", True, (255,255,255))
+            gameDisplay.blit(final,(128,30))
             for i in range(len(eval(Guests))):
             #   dataset = my_database.Getdatabase(f"player{i+1}")
             #  print(dataset)
             # self.gameDisplay.blit(dataset[0], (dataset[1], 600*0.8))
-                gameDisplay.blit(players[i].car_img, (players[i].X_Position,y))
+                gameDisplay.blit(players[i].car_img, (players[i].X_Position,players[i].Y_Position))
             if GameOverOn != 0:
-                if time.time()- GameOverOn <2:
+                if time.time()- GameOverOn <1:
                     defeat = self.FONT.render(f"{playerGameOver} is defeated", True, (255,255,255))
                     gameDisplay.blit(defeat, (600, 420)) 
-                elif time.time() - GameOverOn > 2:
+                elif time.time() - GameOverOn > 1:
                     for i in range(len(eval(Guests))):
                         if players[i].name == playerGameOver:
                             players[i].X_Position = 800*0.45
+                            players[i].Y_Position = 600*0.8
                     GameOverOn = 0
-                    playerGameOver="None"
+                    playerGameOver = "None"
+            if WinOn != 0:
+                if time.time()- WinOn <1:
+                    win = self.FONT.render(f"{playerWin} is Win !!!!!", True, (255,255,255))
+                    gameDisplay.blit(win, (600, 420)) 
+                elif time.time() - WinOn > 1:
+                    for i in range(len(eval(Guests))):
+                        if players[i].name == playerWin:
+                            players[i].X_Position = 800*0.45
+                            players[i].Y_Position = 600*0.8
+                    WinOn = 0
+                    playerWin = "None"            
             if chatOn != "None":
                 if time.time() - currentTime < 3:
                     text = self.FONT.render(f"{chatOn[5:12]}: {chatOn[13:]}", True, (255,255,255))
@@ -255,6 +287,7 @@ class CarRacing(threading.Thread):
         client.send(f"StartAgain-['{PlayerTitle}','{myPosition}','{players[myPlayerNumber-1].car_img}']".encode('utf-8'))
         pygame.display.set_caption('Car Dodge')
         self.run_car()
+    
     def run_car(self):
         global IsChange
         global gameDisplay
@@ -265,23 +298,24 @@ class CarRacing(threading.Thread):
         thread_chat = threading.Thread(target=sendChat)
         thread_chat.start()
         '''''
-
         # lama a5osh b player 3 lazm y3ml object l player 1 w player 2 beltrteb
         # 3shan y3mlhom append beltrteb
         # must change this while to be generic for my car and all other cars
         # implement function for restarting after gameover
-        while not players[myPlayerNumber-1].crashed:
-            
+        while not players[myPlayerNumber-1].crashed and not players[myPlayerNumber-1].win:
+
             #with lock:
              #   if IsChange == "Change":    
               #      players[myPlayerNumber-1].X_Position = myPosition
                #     IsChange = "No Change" 
             if SendInitPosition != "No":
                 with lock:
-                    for i in range (len(eval(Guests))-1):
-                        client.send(f'{players[i].name} Refresh {players[i].X_Position}'.encode('utf-8'))
-                        time.sleep(0.2)
-                    SendInitPosition = "No"
+
+                        client.send(f'{players[myPlayerNumber-1].name} RefreshH {players[myPlayerNumber-1].X_Position}'.encode('utf-8'))
+                        time.sleep(0.5)
+                        client.send(f'{players[myPlayerNumber-1].name} RefreshV {players[myPlayerNumber-1].Y_Position}'.encode('utf-8'))
+                        time.sleep(0.5)
+                        SendInitPosition = "No"
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -294,16 +328,29 @@ class CarRacing(threading.Thread):
                 if (event.type == pygame.KEYDOWN):
                     if (event.key == pygame.K_LEFT):
                         with lock:
-                            players[myPlayerNumber-1].X_Position -= 50
-                            client.send(f'{PlayerTitle} GoH Left {players[myPlayerNumber-1].X_Position}'.encode('utf-8'))
+                            players[myPlayerNumber-1].X_Position -= 30
+                            #player2 GoH -
+                            client.send(f'{PlayerTitle} GoH {players[myPlayerNumber-1].X_Position}'.encode('utf-8'))
                         print ("CAR X COORDINATES: %s" % players[myPlayerNumber-1].X_Position)
                         print ("x: {x}, y: {y}".format(x=players[myPlayerNumber-1].X_Position, y=players[myPlayerNumber-1].Y_Position))
                     if (event.key == pygame.K_RIGHT):
                         with lock:
-                            players[myPlayerNumber-1].X_Position += 50
-                            client.send(f'{PlayerTitle} GoH Right{players[myPlayerNumber-1].X_Position}'.encode('utf-8'))
+                            players[myPlayerNumber-1].X_Position += 30
+                            client.send(f'{PlayerTitle} GoH {players[myPlayerNumber-1].X_Position}'.encode('utf-8'))
                         print ("CAR X COORDINATES: %s" % players[myPlayerNumber-1].X_Position)
                         print ("x: {x}, y: {y}".format(x=players[myPlayerNumber-1].X_Position, y=players[myPlayerNumber-1].Y_Position))
+                    if (event.key == pygame.K_UP):
+                        with lock:
+                            players[myPlayerNumber-1].Y_Position -=30
+                            client.send(f'{PlayerTitle} GoV {players[myPlayerNumber-1].Y_Position}'.encode('utf-8'))
+                        print ("CAR X COORDINATES: %s" % players[myPlayerNumber-1].Y_Position)
+                        print ("x: {x}, y: {y}".format(x=players[myPlayerNumber-1].Y_Position, y=players[myPlayerNumber-1].Y_Position))
+                    if (event.key == pygame.K_DOWN):
+                        with lock:
+                            players[myPlayerNumber-1].Y_Position +=30
+                            client.send(f'{PlayerTitle} GoV {players[myPlayerNumber-1].Y_Position}'.encode('utf-8'))
+                        print ("CAR X COORDINATES: %s" % players[myPlayerNumber-1].Y_Position)
+                        print ("x: {x}, y: {y}".format(x=players[myPlayerNumber-1].Y_Position, y=players[myPlayerNumber-1].Y_Position))
                     if self.active:
                         if event.key == pygame.K_RETURN:
                             client.send(f'chat-{PlayerTitle}-{self.text}'.encode('utf-8'))
@@ -343,11 +390,14 @@ class CarRacing(threading.Thread):
                     self.crashed = True
                     self.display_message("Game Over !!!")
             '''''
-            if players[myPlayerNumber-1].X_Position < 310 or players[myPlayerNumber-1].X_Position > 460:
+            if players[myPlayerNumber-1].X_Position < 280 or players[myPlayerNumber-1].X_Position > 460:
                 players[myPlayerNumber-1].crashed = True
                 client.send(f'Gameover-{PlayerTitle}'.encode('utf-8'))
                 self.display_message("Game Over !!!")
-
+            if players[myPlayerNumber-1].Y_Position < 40:
+                players[myPlayerNumber-1].win = True
+                client.send(f'Win-{PlayerTitle}'.encode('utf-8'))
+                self.display_message(f"{PlayerTitle} Win !!!")
             pygame.display.update()
             with lock:
                 clock.tick(60)
