@@ -8,7 +8,7 @@ import pygame
 #import redis
 #------------------------- Open connection with server ---------------------
 #import my_database
-host = '16.170.230.219' #public ip VM
+host = '16.171.52.73' #public ip VM
 port = 3014
 
 print("connected to the server")
@@ -31,9 +31,18 @@ chatOn = None
 GameOverOn = 0
 playerGameOver = "None"
 currentTime = 0
+ReEnteredPlayer = "None"
 lock = threading.Lock()
 # -------------------------------- END - Global Variables --------------------------------
-
+class Player:
+    def __init__(self, name, car_img, x_pos, y_pos):
+        self.name = name
+        self.car_img = car_img
+        self.X_Position = x_pos
+        self.Y_Position = y_pos
+        self.crashed = False
+        hostname = socket.gethostname()
+        self.UniqueId = socket.gethostbyname(hostname)
 #***************************** Recieve Thread *************************************
 def clientRecieve():
     global PlayerTitle
@@ -49,6 +58,7 @@ def clientRecieve():
     global currentTime
     global GameOverOn
     global playerGameOver
+    global ReEnteredPlayer
     while True:
         try:
             message = client.recv(1024).decode('utf-8')
@@ -95,14 +105,22 @@ def clientRecieve():
             #New player1 has connected to the game
             elif message[0:3] == "New":
                 with lock:
+                    HostName = socket.gethostname()
                     SendInitPosition = message[4:11]
                     #message[4:11] == player1
-                    Guests = message[12:]
-                    print("Guestes ++ : "+ Guests)
-                    p = Player(name=f"player{len(eval(Guests))}",car_img=pygame.image.load(f'./img/car{len(eval(Guests))}.png'),x_pos=800*0.45,y_pos=600*0.8)
-                    players[len(eval(Guests))-1]=p
-                    print(players)
-                    time.sleep(0.01)
+                    for i in range (len(eval(Guests))):
+                        if players[i].UniqueId == socket.gethostbyname(HostName):
+                            PlayerTitle = players[i].name
+                            myPlayerNumber = int(players[i].name[-1])
+                            ReEnteredPlayer = f"ReEntered-{PlayerTitle}"
+                    if ReEnteredPlayer == "None":              
+                        Guests = message[12:]
+                        print("Guestes ++ : "+ Guests)
+                        p = Player(name=f"player{len(eval(Guests))}",car_img=pygame.image.load(f'./img/car{len(eval(Guests))}.png'),x_pos=800*0.45,y_pos=600*0.8)
+                        players[len(eval(Guests))-1]=p
+                        print(players)
+                        time.sleep(0.01)
+
                     #create object and append in array of objects
             elif message[0:6] == "Update":
                 with lock:
@@ -127,6 +145,14 @@ def clientRecieve():
                     print(f"{message[5:12]} : {message[13:]}")
                     currentTime = time.time()
                     chatOn = message
+            elif message[0:11] == "Edit-Guests":
+                if PlayerTitle == message[-7:]:
+                    pass
+                else:
+                    for i in range(len(eval(Guests))):
+                        if players[i].name == message[-7:]:
+                            Guests.pop(i)
+                    print("re joined : "+Guests)
             else:
                 print(message)
                 
@@ -154,13 +180,7 @@ def sendChat():
             break
 '''''
 
-class Player:
-    def __init__(self, name, car_img, x_pos, y_pos):
-        self.name = name
-        self.car_img = car_img
-        self.X_Position = x_pos
-        self.Y_Position = y_pos
-        self.crashed = False
+
 
 #playerName = client.recv(1024).decode('utf-8')
 class CarRacing(threading.Thread):
@@ -261,6 +281,7 @@ class CarRacing(threading.Thread):
         global gameDisplay
         global clock
         global SendInitPosition
+        global ReEnteredPlayer
         '''''
         time.sleep(3)
         thread_chat = threading.Thread(target=sendChat)
@@ -277,6 +298,11 @@ class CarRacing(threading.Thread):
              #   if IsChange == "Change":    
               #      players[myPlayerNumber-1].X_Position = myPosition
                #     IsChange = "No Change" 
+
+            if ReEnteredPlayer != "None":
+                client.send(f"{ReEnteredPlayer}".encode('utf-8'))
+                ReEnteredPlayer = "None"
+            
             if SendInitPosition != "No":
                 with lock:
                     for i in range (len(eval(Guests))-1):

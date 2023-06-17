@@ -19,7 +19,7 @@ clients=[] #ip address of each one
 
 guests=[] #naming of each one .. player1, player2 .. etc
 
-
+index = 0
 
 def check(): 
     for i,client in clients:
@@ -51,12 +51,19 @@ def broadcast_ExceptSender(message,index_ToSkip):
             client.send(message)
 def broadcast(message):
     for client in clients:
-        client.send(message)
+        client.send(message.encode('utf-8'))
 def handleClient(client):
+    global guests
+    global index
     while True:
         try:
-            message = client.recv(1024)#max number need to be recv
-            broadcast(message)
+            message = client.recv(1024).decode('utf-8')#max number need to be recv
+            if message[0:9] == "ReEntered":
+                guests = guests[:-1]
+                index = index - 1
+                broadcast(f"Edit-Guests-{message[-7:]}")
+            else:
+                broadcast(message)
         except:
             clients.remove(client)
             client.close()
@@ -68,8 +75,8 @@ def recieve():
     x = 360
     img = "image"
     PlayerName = []
-    global index 
-    index = 0
+    global index
+    global guests 
     while True:
         print('Server is running and listening . . . . <<------------------->> ')
         client , address = server.accept()
