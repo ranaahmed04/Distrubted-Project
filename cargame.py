@@ -9,7 +9,7 @@ import pygame
 #------------------------- Open connection with server ---------------------
 #import my_database
 host = '16.170.230.219' #public ip VM
-port = 3013
+port = 3014
 
 print("connected to the server")
 
@@ -28,6 +28,7 @@ SendInitPosition = "No"
 PlayerTitle = "None"
 Start = "None"
 chatOn = None
+GameOverOn = "None"
 currentTime = 0
 lock = threading.Lock()
 # -------------------------------- END - Global Variables --------------------------------
@@ -45,6 +46,7 @@ def clientRecieve():
     global Start
     global chatOn 
     global currentTime
+    global GameOverOn
     while True:
         try:
             message = client.recv(1024).decode('utf-8')
@@ -110,12 +112,9 @@ def clientRecieve():
                     if (players[i].name == message[-7:]) and (players[i].name != PlayerTitle):
                         print(f"{message[-7:]} is defeated")
                         font = pygame.font.SysFont("lucidaconsole", 14)
-                        text = font.render(f"{message[-7:]} is defeated", True, (255,255,255))
-                        gameDisplay.blit(text, (600, 420)) 
-                        pygame.display.update()
-                        clock.tick(60)
-                        sleep(1)
-                        players[i].X_Position = 800*0.45
+                        GameOverOn = f"{message[-7:]}{time.time()}"
+                        print(f"{message[-7:]}{time.time()}")
+
             elif message == "StartPlay":
                 Start = message
             #player1 Go Left
@@ -183,7 +182,7 @@ class CarRacing(threading.Thread):
         self.SCREEN = pygame.display.set_mode((self.WIDTH, self.HEIGHT))
 
         self.FONT = pygame.font.SysFont('arial', 16)
-        self.TEXTBOX = pygame.Rect(10, self.HEIGHT-30, 140, 20)
+        self.TEXTBOX = pygame.Rect(10, self.HEIGHT-30, 190, 20)
         self.COLOR_INACTIVE = pygame.Color('grey')
         self.COLOR_ACTIVE = pygame.Color('white')
 
@@ -216,17 +215,28 @@ class CarRacing(threading.Thread):
         try:
             global chatOn
             global currentTime
+            global GameOverOn
+            t = self.FONT.render(f"Enter Your message ^_^ :", True, (255,255,255))
+            gameDisplay.blit(t,(10,540))
             for i in range(len(eval(Guests))):
             #   dataset = my_database.Getdatabase(f"player{i+1}")
             #  print(dataset)
             # self.gameDisplay.blit(dataset[0], (dataset[1], 600*0.8))
                 gameDisplay.blit(players[i].car_img, (players[i].X_Position,y))
+            if GameOverOn != "None":
+                if time.time()- float(GameOverOn[7:]) <2:
+                    defeat = self.font.render(f"{GameOverOn[0:7]} is defeated", True, (255,255,255))
+                    gameDisplay.blit(defeat, (600, 420)) 
+                elif time.time() - float(GameOverOn[7:]) > 2:
+                    players[i].X_Position = 800*0.45
+                    GameOverOn = "None"
             if chatOn != "None":
                 if time.time() - currentTime < 3:
                     text = self.FONT.render(f"{chatOn[5:12]}: {chatOn[13:]}", True, (255,255,255))
                     gameDisplay.blit(text,(10,420))
                 elif time.time() - currentTime > 3:
                     chatOn = "None"
+           
         except:
             pass
                 
