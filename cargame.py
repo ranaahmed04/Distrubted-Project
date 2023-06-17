@@ -8,7 +8,7 @@ import pygame
 #import redis
 #------------------------- Open connection with server ---------------------
 #import my_database
-host = '16.170.230.219' #public ip VM
+host = '16.171.52.73' #public ip VM
 port = 3014
 
 print("connected to the server")
