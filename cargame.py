@@ -11,8 +11,6 @@ import pygame
 host = '16.171.52.73' #public ip VM
 port = 3014
 
-print("connected to the server")
-
 #----------------------- END - Open connection with server ---------------------
 
 
@@ -136,6 +134,7 @@ def clientRecieve():
 try:
     client = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
     client.connect((host,port))
+    print("connected to the server")
     thread = threading.Thread(target=clientRecieve)
     thread.start()
 except:
