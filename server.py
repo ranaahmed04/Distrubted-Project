@@ -51,7 +51,7 @@ def broadcast_ExceptSender(message,index_ToSkip):
             client.send(message)
 def broadcast(message):
     for client in clients:
-        client.send(f"{message}".encode('utf-8'))
+        client.send(message.encode('utf-8'))
 def handleClient(client):
     global guests
     global index
@@ -61,7 +61,6 @@ def handleClient(client):
             if message[0:9] == "ReEntered":
                 guests = guests[:-1]
                 index = index - 1
-                print("some one re join :"+guests)
                 broadcast(f"Edit-Guests-{message[-7:]}")
             else:
                 broadcast(message)
