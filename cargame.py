@@ -28,7 +28,8 @@ SendInitPosition = "No"
 PlayerTitle = "None"
 Start = "None"
 chatOn = None
-GameOverOn = "None"
+GameOverOn = 0
+playerGameOver = "None"
 currentTime = 0
 lock = threading.Lock()
 # -------------------------------- END - Global Variables --------------------------------
@@ -47,6 +48,7 @@ def clientRecieve():
     global chatOn 
     global currentTime
     global GameOverOn
+    global playerGameOver
     while True:
         try:
             message = client.recv(1024).decode('utf-8')
@@ -107,13 +109,14 @@ def clientRecieve():
                     Guests = message[7:]
                     print(Guests)
                     time.sleep(0.01)
+
+
             elif message[0:8] == "Gameover":
                 for i in range(len(eval(Guests))):
                     if (players[i].name == message[-7:]) and (players[i].name != PlayerTitle):
                         print(f"{message[-7:]} is defeated")
-                        font = pygame.font.SysFont("lucidaconsole", 14)
-                        GameOverOn = f"{message[-7:]}{time.time()}"
-                        print(f"{message[-7:]}{time.time()}")
+                        GameOverOn = time.time()
+                        playerGameOver = message[-7:]
 
             elif message == "StartPlay":
                 Start = message
@@ -213,6 +216,7 @@ class CarRacing(threading.Thread):
         self.count = 0
     def car(self,x,y):
         try:
+            global playerGameOver
             global chatOn
             global currentTime
             global GameOverOn
@@ -223,13 +227,16 @@ class CarRacing(threading.Thread):
             #  print(dataset)
             # self.gameDisplay.blit(dataset[0], (dataset[1], 600*0.8))
                 gameDisplay.blit(players[i].car_img, (players[i].X_Position,y))
-            if GameOverOn != "None":
-                if time.time()- float(GameOverOn[7:]) <2:
-                    defeat = self.font.render(f"{GameOverOn[0:7]} is defeated", True, (255,255,255))
+            if GameOverOn != 0:
+                if time.time()- GameOverOn <2:
+                    defeat = self.FONT.render(f"{playerGameOver} is defeated", True, (255,255,255))
                     gameDisplay.blit(defeat, (600, 420)) 
-                elif time.time() - float(GameOverOn[7:]) > 2:
-                    players[i].X_Position = 800*0.45
-                    GameOverOn = "None"
+                elif time.time() - GameOverOn > 2:
+                    for i in range(len(eval(Guests))):
+                        if players[i].name == playerGameOver:
+                            players[i].X_Position = 800*0.45
+                    GameOverOn = 0
+                    playerGameOver="None"
             if chatOn != "None":
                 if time.time() - currentTime < 3:
                     text = self.FONT.render(f"{chatOn[5:12]}: {chatOn[13:]}", True, (255,255,255))
