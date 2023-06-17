@@ -240,7 +240,7 @@ class CarRacing(threading.Thread):
             t = self.FONT.render(f"Enter Your message ^_^ :", True, (255,255,255))
             gameDisplay.blit(t,(10,540))
             final = self.FONT.render(f"Final - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - Final", True, (255,255,255))
-            gameDisplay.blit(final,(128,30))
+            gameDisplay.blit(final,(128,60))
             for i in range(len(eval(Guests))):
             #   dataset = my_database.Getdatabase(f"player{i+1}")
             #  print(dataset)
@@ -312,9 +312,9 @@ class CarRacing(threading.Thread):
                 with lock:
 
                         client.send(f'{players[myPlayerNumber-1].name} RefreshH {players[myPlayerNumber-1].X_Position}'.encode('utf-8'))
-                        time.sleep(0.5)
+                        time.sleep(myPlayerNumber * 0.34567)
                         client.send(f'{players[myPlayerNumber-1].name} RefreshV {players[myPlayerNumber-1].Y_Position}'.encode('utf-8'))
-                        time.sleep(0.5)
+                        time.sleep(myPlayerNumber * 0.34567)
                         SendInitPosition = "No"
 
             for event in pygame.event.get():
@@ -341,13 +341,13 @@ class CarRacing(threading.Thread):
                         print ("x: {x}, y: {y}".format(x=players[myPlayerNumber-1].X_Position, y=players[myPlayerNumber-1].Y_Position))
                     if (event.key == pygame.K_UP):
                         with lock:
-                            players[myPlayerNumber-1].Y_Position -=30
+                            players[myPlayerNumber-1].Y_Position -=65
                             client.send(f'{PlayerTitle} GoV {players[myPlayerNumber-1].Y_Position}'.encode('utf-8'))
                         print ("CAR X COORDINATES: %s" % players[myPlayerNumber-1].Y_Position)
                         print ("x: {x}, y: {y}".format(x=players[myPlayerNumber-1].Y_Position, y=players[myPlayerNumber-1].Y_Position))
                     if (event.key == pygame.K_DOWN):
                         with lock:
-                            players[myPlayerNumber-1].Y_Position +=30
+                            players[myPlayerNumber-1].Y_Position +=65
                             client.send(f'{PlayerTitle} GoV {players[myPlayerNumber-1].Y_Position}'.encode('utf-8'))
                         print ("CAR X COORDINATES: %s" % players[myPlayerNumber-1].Y_Position)
                         print ("x: {x}, y: {y}".format(x=players[myPlayerNumber-1].Y_Position, y=players[myPlayerNumber-1].Y_Position))
