@@ -94,6 +94,8 @@ def clientRecieve():
                                     players[int(n)-1].Y_Position = float(message[17:])
                     except:
                         pass
+                    #Here if i am player greater than player1 
+                    #I need to include all the last players and get an index in players list
             elif playerNum == "player":
                 with lock:
                     PlayerTitle = message
@@ -132,6 +134,9 @@ def clientRecieve():
                         print(f"{message[-7:]} is defeated")
                         GameOverOn = time.time()
                         playerGameOver = message[-7:]
+
+
+                         
             elif message[0:3] == "Win":
                 for i in range(len(eval(Guests))):
                     if (players[i].name == message[-7:]) and (players[i].name != PlayerTitle):
@@ -153,10 +158,15 @@ def clientRecieve():
                 print("Disconnected - - - - - -"+message)
             else:
                 print(message)
-                
         except Exception as e:
             print('Error From Client Recieve ! : ' + e)
             break
+
+
+
+
+
+        
 try:
     client = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
     client.connect((host,port))
@@ -257,6 +267,7 @@ class CarRacing(threading.Thread):
             gameDisplay.blit(t,(10,540))
             final = self.FONT.render(f"Final - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - Final", True, (255,255,255))
             gameDisplay.blit(final,(128,60))
+            #    " ['player1','player2'] "
             for i in range(len(eval(Guests))):
             #   dataset = my_database.Getdatabase(f"player{i+1}")
             #  print(dataset)
@@ -288,10 +299,10 @@ class CarRacing(threading.Thread):
                     WinOn = 0
                     playerWin = "None"            
             if chatOn != "None":
-                if time.time() - currentTime < 3:
+                if time.time() - currentTime < 2:
                     text = self.FONT.render(f"{chatOn[5:12]}: {chatOn[13:]}", True, (255,255,255))
                     gameDisplay.blit(text,(10,420))
-                elif time.time() - currentTime > 3:
+                elif time.time() - currentTime > 2:
                     chatOn = "None"
            
         except:
@@ -343,6 +354,7 @@ class CarRacing(threading.Thread):
                 if event.type == pygame.QUIT:
                     client.send(f'Leave-{PlayerTitle}'.encode('utf-8'))
                     players[myPlayerNumber-1].crashed = True
+                    sys.exit()
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if self.TEXTBOX.collidepoint(event.pos):
                         self.active = True
