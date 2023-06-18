@@ -79,19 +79,21 @@ def clientRecieve():
                 except:
                     pass
             elif message[8:15] == "Refresh":
+                    try:
                     #player4
-                    if PlayerTitle == message[0:7]:
+                        if PlayerTitle == message[0:7]:
+                            pass
+                        else:  
+                            with lock:
+                                #get player name and change the x coordinates of this player
+                                n = message[6:7]
+                                GlobalMessage = message
+                                if message[15:16] == 'H':
+                                    players[int(n)-1].X_Position = float(message[17:])
+                                elif message[15:16] == 'V':
+                                    players[int(n)-1].Y_Position = float(message[17:])
+                    except:
                         pass
-                    else:  
-                        with lock:
-                            #get player name and change the x coordinates of this player
-                            n = message[6:7]
-                            GlobalMessage = message
-                            if message[15:16] == 'H':
-                                players[int(n)-1].X_Position = float(message[17:])
-                            elif message[15:16] == 'V':
-                                players[int(n)-1].Y_Position = float(message[17:])
-
             elif playerNum == "player":
                 with lock:
                     PlayerTitle = message
