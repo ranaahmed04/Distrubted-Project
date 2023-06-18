@@ -124,7 +124,7 @@ def clientRecieve():
                     Guests = message[7:]
                     print(Guests)
                     time.sleep(0.01)
-
+#no
 
             elif message[0:8] == "Gameover":
                 for i in range(len(eval(Guests))):

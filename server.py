@@ -7,7 +7,7 @@ host = '172.31.21.94' #private ip VM
 port = 50002
 #my_database = redis.Redis(host=host,port=port,db=0)
 
-
+#no
 server = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 
 server.bind((host,port)) #must have 1 argument
