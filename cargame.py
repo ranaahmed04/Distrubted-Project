@@ -9,7 +9,7 @@ import random
 #import redis
 #------------------------- Open connection with server ---------------------
 #import my_database
-host = '16.170.234.17' #public ip VM
+host = '16.170.162.63' #public ip VM
 port = 50002
 
 #----------------------- END - Open connection with server ---------------------
