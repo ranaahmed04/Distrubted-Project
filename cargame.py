@@ -5,11 +5,12 @@ import sys
 import threading
 import time
 import pygame
+import random
 #import redis
 #------------------------- Open connection with server ---------------------
 #import my_database
 host = '16.170.234.17' #public ip VM
-port = 50001
+port = 50002
 
 #----------------------- END - Open connection with server ---------------------
 
@@ -324,11 +325,11 @@ class CarRacing(threading.Thread):
                 
             if SendInitPosition != "No":
                 with lock:
-                        time.sleep(myPlayerNumber * 0.34567)
+                        time.sleep(myPlayerNumber * 0.75 * random.uniform(0.5,1))
                         client.send(f'{players[myPlayerNumber-1].name} RefreshH {players[myPlayerNumber-1].X_Position}'.encode('utf-8'))
-                        time.sleep(myPlayerNumber * 0.34567)
+                        time.sleep(myPlayerNumber * 0.75 * random.uniform(0.5,1))
                         client.send(f'{players[myPlayerNumber-1].name} RefreshV {players[myPlayerNumber-1].Y_Position}'.encode('utf-8'))
-                        time.sleep(myPlayerNumber * 0.34567)
+                        
                         SendInitPosition = "No"
 
             for event in pygame.event.get():
