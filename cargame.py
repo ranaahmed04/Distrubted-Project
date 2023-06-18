@@ -229,9 +229,14 @@ class CarRacing(threading.Thread):
         #self.enemy_car_speed = 5
         #self.enemy_car_width = 49
         #self.enemy_car_height = 100
-        #my_database.StoreDatabase(PlayerTitle,self.carImg,self.car_x_coordinate,self.crashed)   
-        p = Player(name=PlayerTitle,car_img=pygame.image.load(f'./img/car{myPlayerNumber}.png'),x_pos=800*0.45,y_pos=600*0.8)
-        players[myPlayerNumber-1]=p
+        #my_database.StoreDatabase(PlayerTitle,self.carImg,self.car_x_coordinate,self.crashed)
+        try:   
+            p = Player(name=PlayerTitle,car_img=pygame.image.load(f'./img/car{myPlayerNumber}.png'),x_pos=800*0.45,y_pos=600*0.8)
+            players[myPlayerNumber-1]=p
+        except:
+            print("\n\n")
+            print("Please include image of your new car by this format 'car(n).png'")
+            print("\n\n")
         # Background
         self.bgImg = pygame.image.load("./img/back_ground.jpg")
         self.bg_x1 = (self.display_width / 2) - (360 / 2)
@@ -396,8 +401,8 @@ class CarRacing(threading.Thread):
     
             text_surface = self.FONT.render(self.text, True, (0, 0, 0))
             gameDisplay.blit(text_surface, (self.TEXTBOX.x+5, self.TEXTBOX.y+5))
-            self.highscore(self.count)
-            self.count += 1
+            #self.highscore(self.count)
+            #self.count += 1
             '''''
             if (self.count % 100 == 0):
                 self.enemy_car_speed += 1
