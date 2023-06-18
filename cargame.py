@@ -8,8 +8,8 @@ import pygame
 #import redis
 #------------------------- Open connection with server ---------------------
 #import my_database
-host = '16.171.54.29' #public ip VM
-port = 3015
+host = '16.170.234.17' #public ip VM
+port = 50001
 
 #----------------------- END - Open connection with server ---------------------
 
@@ -31,6 +31,7 @@ playerGameOver = "None"
 WinOn = 0
 playerWin = "None"
 currentTime = 0
+LeftRoom =[]
 lock = threading.Lock()
 # -------------------------------- END - Global Variables --------------------------------
 
@@ -51,6 +52,7 @@ def clientRecieve():
     global playerGameOver
     global WinOn
     global playerWin
+    global LeftRoom
     while True:
         try:
             message = client.recv(1024).decode('utf-8')
@@ -76,7 +78,10 @@ def clientRecieve():
                 except:
                     pass
             elif message[8:15] == "Refresh":
-                    if PlayerTitle != message[0:7]:  
+                    #player4
+                    if PlayerTitle == message[0:7]:
+                        pass
+                    else:  
                         with lock:
                             #get player name and change the x coordinates of this player
                             n = message[6:7]
@@ -139,7 +144,10 @@ def clientRecieve():
                     print(f"{message[5:12]} : {message[13:]}")
                     currentTime = time.time()
                     chatOn = message
-            
+                    #leave
+            elif message[0:5] == "Leave":
+                LeftRoom.append(message[-7:])
+                print("Disconnected - - - - - -"+message)
             else:
                 print(message)
                 
@@ -245,7 +253,10 @@ class CarRacing(threading.Thread):
             #   dataset = my_database.Getdatabase(f"player{i+1}")
             #  print(dataset)
             # self.gameDisplay.blit(dataset[0], (dataset[1], 600*0.8))
-                gameDisplay.blit(players[i].car_img, (players[i].X_Position,players[i].Y_Position))
+                if players[i].name in LeftRoom:
+                    pass
+                else:
+                    gameDisplay.blit(players[i].car_img, (players[i].X_Position,players[i].Y_Position))
             if GameOverOn != 0:
                 if time.time()- GameOverOn <1:
                     defeat = self.FONT.render(f"{playerGameOver} is defeated", True, (255,255,255))
@@ -293,6 +304,7 @@ class CarRacing(threading.Thread):
         global gameDisplay
         global clock
         global SendInitPosition
+        global LeftRoom
         '''''
         time.sleep(3)
         thread_chat = threading.Thread(target=sendChat)
@@ -307,10 +319,12 @@ class CarRacing(threading.Thread):
             #with lock:
              #   if IsChange == "Change":    
               #      players[myPlayerNumber-1].X_Position = myPosition
-               #     IsChange = "No Change" 
+               #     IsChange = "No Change"
+            
+                
             if SendInitPosition != "No":
                 with lock:
-
+                        time.sleep(myPlayerNumber * 0.34567)
                         client.send(f'{players[myPlayerNumber-1].name} RefreshH {players[myPlayerNumber-1].X_Position}'.encode('utf-8'))
                         time.sleep(myPlayerNumber * 0.34567)
                         client.send(f'{players[myPlayerNumber-1].name} RefreshV {players[myPlayerNumber-1].Y_Position}'.encode('utf-8'))
@@ -319,6 +333,7 @@ class CarRacing(threading.Thread):
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
+                    client.send(f'Leave-{PlayerTitle}'.encode('utf-8'))
                     players[myPlayerNumber-1].crashed = True
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if self.TEXTBOX.collidepoint(event.pos):
