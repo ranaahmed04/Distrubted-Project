@@ -9,8 +9,8 @@ import random
 #import redis
 #------------------------- Open connection with server ---------------------
 #import my_database
-host = '16.16.26.157' #public ip VM
-port = 50002
+host = '13.53.123.99' #public ip VM
+port = 50003
 
 #----------------------- END - Open connection with server ---------------------
 
@@ -163,10 +163,6 @@ def clientRecieve():
             break
 
 
-
-
-
-        
 try:
     client = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
     client.connect((host,port))
@@ -176,6 +172,7 @@ try:
 except:
     print("\n\n*** No server Found - Please open the server *** \n\n")
     sys.exit()
+
 
 #***************************** End - Recieve Thread *************************************
 '''''
@@ -277,10 +274,10 @@ class CarRacing(threading.Thread):
                 else:
                     gameDisplay.blit(players[i].car_img, (players[i].X_Position,players[i].Y_Position))
             if GameOverOn != 0:
-                if time.time()- GameOverOn <1:
+                if time.time()- GameOverOn <3:
                     defeat = self.FONT.render(f"{playerGameOver} is defeated", True, (255,255,255))
                     gameDisplay.blit(defeat, (600, 420)) 
-                elif time.time() - GameOverOn > 1:
+                elif time.time() - GameOverOn > 3:
                     for i in range(len(eval(Guests))):
                         if players[i].name == playerGameOver:
                             players[i].X_Position = 800*0.45
@@ -288,10 +285,10 @@ class CarRacing(threading.Thread):
                     GameOverOn = 0
                     playerGameOver = "None"
             if WinOn != 0:
-                if time.time()- WinOn <1:
+                if time.time()- WinOn <3:
                     win = self.FONT.render(f"{playerWin} is Win !!!!!", True, (255,255,255))
                     gameDisplay.blit(win, (600, 420)) 
-                elif time.time() - WinOn > 1:
+                elif time.time() - WinOn > 3:
                     for i in range(len(eval(Guests))):
                         if players[i].name == playerWin:
                             players[i].X_Position = 800*0.45
@@ -299,10 +296,10 @@ class CarRacing(threading.Thread):
                     WinOn = 0
                     playerWin = "None"            
             if chatOn != "None":
-                if time.time() - currentTime < 2:
+                if time.time() - currentTime < 3:
                     text = self.FONT.render(f"{chatOn[5:12]}: {chatOn[13:]}", True, (255,255,255))
                     gameDisplay.blit(text,(10,420))
-                elif time.time() - currentTime > 2:
+                elif time.time() - currentTime > 3:
                     chatOn = "None"
            
         except:
@@ -444,6 +441,7 @@ class CarRacing(threading.Thread):
         gameDisplay.blit(text, (400 - text.get_width() // 2, 240 - text.get_height() // 2))
         self.display_credit()
         pygame.display.update()
+        time.sleep(3)
         with lock:
             clock.tick(60)
         sleep(1)

@@ -4,7 +4,7 @@ import time
 #import redis
 
 host = '172.31.21.94' #private ip VM
-port = 50002
+port = 50003
 #my_database = redis.Redis(host=host,port=port,db=0)
 
 #no
